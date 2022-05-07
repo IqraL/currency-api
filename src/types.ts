@@ -22,3 +22,7 @@ export type Payout = {
   payoutAmount: number;
   itemsInPayout: UniqItem[];
 };
+
+export type GroupBySellerRef = {
+  key: UniqItem[];
+};

@@ -1,5 +1,6 @@
 import { Payout, UniqItem } from "./types";
 import { v4 as createId } from "uuid";
+import { MAX_PAYOUT_AMOUNT } from "./constants";
 
 // create payout for item;
 export const createPayout = (item: UniqItem): Payout => {
