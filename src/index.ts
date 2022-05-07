@@ -1,28 +1,14 @@
 import express, { Request } from "express";
 import { Item, Payout, UniqItem } from "./types";
-import { keyBy, groupBy, values } from "lodash";
+import { groupBy } from "lodash";
 import { v4 as createId } from "uuid";
+import { findPayoutToUpdate, createPayout, updatePayout } from "./helper";
 
 const app = express();
 app.use(express.json()); // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 
 const port = 5000;
-
-// MAX_PAYOUT_AMOUNT in any currency
-const MAX_PAYOUT_AMOUNT = 100000;
-
-// create payout for item that exceeds the limit of MAX_PAYOUT
-const createPayoutForItem = (item: UniqItem): Payout => {
-  const payoutId = createId();
-  const { name, priceAmount, ...rest } = item;
-  return {
-    payoutId,
-    ...rest,
-    payoutAmount: priceAmount,
-    itemsInPayout: [item],
-  };
-};
 
 const createPayoutForSeller = (
   sellerRef: string,
@@ -40,24 +26,35 @@ const createPayoutForSeller = (
 
     const payoutsForSeller = itemsSoldForSeller.reduce(
       (currentPayoutsForSeller: Payout[], item: UniqItem) => {
-        // if item price is greater then MAX_PAYOUT , create a payout for the item
-        if (item.priceAmount >= MAX_PAYOUT_AMOUNT) {
-          return [...currentPayoutsForSeller, createPayoutForItem(item)];
+        const payoutToAppend = findPayoutToUpdate(
+          currentPayoutsForSeller,
+          item
+        );
+
+        /* 
+           if item price is greater then MAX_PAYOUT 
+           OR if every previous payous created reach > maxlimit with this item 
+           create a payout for the 
+        */
+        if (item.priceAmount >= MAX_PAYOUT_AMOUNT || !payoutToAppend) {
+          return [...currentPayoutsForSeller, createPayout(item)];
         }
 
-        
+        // remove the payoutToAppend from currentPayoutsForSeller,
+        // payoutToAppend will be updated then placed back in
+        const currentPayoutsForSellerFiltered = currentPayoutsForSeller.filter(
+          (payout) => payout.payoutId !== payoutToAppend.payoutId
+        );
 
+        const updatedPayout = updatePayout(payoutToAppend, item);
 
-
-        return [...currentPayoutsForSeller];
+        return [...currentPayoutsForSellerFiltered, updatedPayout];
       },
       []
     );
 
     allPayoutsForSeller = [...allPayoutsForSeller, ...payoutsForSeller];
   }
-
-  console.log("allPayoutsForSeller", allPayoutsForSeller);
 };
 
 const createPayoutObjectFunction = (

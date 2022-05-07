@@ -1,0 +1,2 @@
+// MAX_PAYOUT_AMOUNT in any currency
+const MAX_PAYOUT_AMOUNT = 100000;
