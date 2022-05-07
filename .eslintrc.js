@@ -38,14 +38,16 @@ module.exports = {
     },
     plugins: ['@typescript-eslint', 'prettier'],
     rules: {
-      'prettier/prettier': [
-        1,
-        {
-          trailingComma: 'es5',
-          singleQuote: true,
-          semi: true,
-        },
-      ],
+      // 'prettier/prettier': [
+      //   1,
+      //   {
+      //     trailingComma: 'es5',
+      //     singleQuote: true,
+      //     semi: true,
+
+      //   },
+      // ],
+      "max-len": ["error", {"code": 2000, "ignoreUrls": true}],
       ...require('eslint-config-prettier').rules,
       ...require('eslint-config-prettier/@typescript-eslint').rules,
     },
