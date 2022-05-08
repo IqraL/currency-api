@@ -1,10 +1,13 @@
-import { Payout, UniqItem } from "./types";
+import { Item, Payout } from "./types";
 import { groupBy } from "lodash";
 import { findPayoutToUpdate, createPayout, updatePayout } from "./helper";
 import { MAX_PAYOUT_AMOUNT } from "./constants";
 
 // generate all payouts for seller
-export const generatePayoutsForSeller = (allItemsSoldForSeller: UniqItem[]) => {
+export const generatePayoutsForSeller = (
+  allItemsSoldForSeller: Item[],
+  uploadId: string
+) => {
   // different currencies will never have same payout for the same seller, so group items by currency
   const itemsSoldForSellerByCurrency = groupBy(
     allItemsSoldForSeller,
@@ -17,7 +20,7 @@ export const generatePayoutsForSeller = (allItemsSoldForSeller: UniqItem[]) => {
     const itemsSoldForSeller = itemsSoldForSellerByCurrency[currency];
 
     const payoutsForSeller = itemsSoldForSeller.reduce(
-      (currentPayoutsForSeller: Payout[], item: UniqItem) => {
+      (currentPayoutsForSeller: Payout[], item: Item) => {
         const payoutToAppend = findPayoutToUpdate(
           currentPayoutsForSeller,
           item
@@ -29,7 +32,7 @@ export const generatePayoutsForSeller = (allItemsSoldForSeller: UniqItem[]) => {
            create a payout for the
         */
         if (item.priceAmount >= MAX_PAYOUT_AMOUNT || !payoutToAppend) {
-          return [...currentPayoutsForSeller, createPayout(item)];
+          return [...currentPayoutsForSeller, createPayout(item, uploadId)];
         }
 
         // remove the payoutToAppend from currentPayoutsForSeller,

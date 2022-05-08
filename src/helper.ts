@@ -1,13 +1,14 @@
-import { Payout, UniqItem } from "./types";
+import { Payout, Item } from "./types";
 import { v4 as createId } from "uuid";
 import { MAX_PAYOUT_AMOUNT } from "./constants";
 
 // create payout for item;
-export const createPayout = (item: UniqItem): Payout => {
+export const createPayout = (item: Item, uploadId: string): Payout => {
   const payoutId = createId();
   const { name, priceAmount, ...rest } = item;
   return {
     payoutId,
+    uploadId,
     ...rest,
     payoutAmount: priceAmount,
     itemsInPayout: [item],
@@ -15,7 +16,7 @@ export const createPayout = (item: UniqItem): Payout => {
 };
 
 // retuen a update a payout, add new item and update payoutAmount
-export const updatePayout = (payout: Payout, item: UniqItem): Payout => {
+export const updatePayout = (payout: Payout, item: Item): Payout => {
   const { payoutAmount, itemsInPayout } = payout;
 
   const newPayoutAmount = payoutAmount + item.priceAmount;
@@ -30,7 +31,7 @@ export const updatePayout = (payout: Payout, item: UniqItem): Payout => {
 
 export const findPayoutToUpdate = (
   currentPayoutsForSeller: Payout[],
-  item: UniqItem
+  item: Item
 ) => {
   // payout that have not reached there max , add item to one of these to reduce number of payouts
   const payoutsWithoutMaxLimit = currentPayoutsForSeller.filter(
