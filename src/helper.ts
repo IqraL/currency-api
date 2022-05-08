@@ -33,13 +33,16 @@ export const findPayoutToUpdate = (
   currentPayoutsForSeller: Payout[],
   item: Item
 ) => {
-  // payout that have not reached there max , add item to one of these to reduce number of payouts
+  // payouts that have not reached there max , add item to one of these to reduce number of payouts
   const payoutsWithoutMaxLimit = currentPayoutsForSeller.filter(
     (payout) => payout.payoutAmount < MAX_PAYOUT_AMOUNT
   );
 
   let payoutToAddTo: Payout | undefined;
 
+  /*
+  Find the best payout to append to with the new item 
+  */
   for (let i = 0; i < payoutsWithoutMaxLimit.length; i++) {
     const potentialPayoutToAddTo = payoutsWithoutMaxLimit[i];
 
@@ -51,6 +54,13 @@ export const findPayoutToUpdate = (
     const setInitialpayoutToAddTo =
       isNewTotalLessThenMaxLimit && !payoutToAddTo;
 
+    /* 
+      use the payout with the highest payoutAmount 
+      which will not reach the max limit when the new item is added
+      because this will save the payout with the smaller payoutAmount to be
+      used after when there is another iteam to be added
+      this way decreasing the number of payouts needed 
+      */
     const updatePayoutToAddTo =
       isNewTotalLessThenMaxLimit &&
       !!payoutToAddTo &&

@@ -22,6 +22,7 @@ client.connect();
 
 app.listen(port, () => console.log(`Running on port ${port}`));
 
+//upload items to / - example data in sample-test-data-postman.json
 app.post("/", async (req: Request<{}, {}, Item[]>, res) => {
   const { body: soldItems } = req;
   const uploadId = new Date().getTime().toString();
@@ -32,6 +33,8 @@ app.post("/", async (req: Request<{}, {}, Item[]>, res) => {
   res.sendStatus(200);
 });
 
+// example: localhost:5000/payouts?numberOfPayouts=10
+// gets the last payouts that where saved in the db
 app.get(
   "/payouts",
   async (req: Request<{}, {}, {}, { numberOfPayouts: string }>, res) => {
@@ -39,8 +42,7 @@ app.get(
       query: { numberOfPayouts },
     } = req;
 
-    const payouts = getPayouts(numberOfPayouts, client);
-
-    res.send(payouts);
+    const payouts = await getPayouts(numberOfPayouts, client);
+    res.json(payouts);
   }
 );
