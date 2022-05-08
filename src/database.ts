@@ -1,5 +1,5 @@
 import { Client, QueryResult } from "pg";
-import { Payout } from "./types";
+import { DbPayoutRow, Payout } from "./types";
 
 const INSERT_PAYOUT_QUERY =
   "insert into payouts (upload_id, payout,seller_ref,currency,payout_id,date) values ($1, $2, $3, $4, $5, $6)";
@@ -37,9 +37,12 @@ export const getPayouts = async (numberOfPayouts: string, client: Client) => {
   try {
     const queryWithLimit = `${SELECT_PAYOUT_QUERY} Limit ${numberOfPayouts}`;
     const result = await client.query(queryWithLimit);
-    return result.rows || [];
+    return formatPayoutRow(result?.rows || []);
   } catch (error) {
     console.log(error);
     return [];
   }
 };
+
+export const formatPayoutRow = (dbRows: DbPayoutRow[]) =>
+  dbRows.map((row) => ({ ...row.payout, date: row.date }));

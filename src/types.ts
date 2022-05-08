@@ -17,3 +17,12 @@ export type Payout = {
 export type GroupBySellerRef = {
   [key: string]: Item[];
 };
+
+export type DbPayoutRow = {
+  payout: Payout;
+  uploadId: string;
+  seller_ref: string;
+  currency: string;
+  payout_id: string;
+  date: string;
+};
