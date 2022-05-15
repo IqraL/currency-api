@@ -1,5 +1,5 @@
 {
-  "name": "iqra_latif_vestiaire_test",
+  "name": "currency-api",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IqraL/Iqra_Latif_Vestiaire_Test.git"
+    "url": "git+https://github.com/IqraL/currency-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/IqraL/Iqra_Latif_Vestiaire_Test/issues"
+    "url": "https://github.com/IqraL/currency-api.git/issues"
   },
-  "homepage": "https://github.com/IqraL/Iqra_Latif_Vestiaire_Test#readme",
+  "homepage": "https://github.com/IqraL/currency-api.git#readme",
   "dependencies": {
     "express": "^4.18.1",
     "lodash": "^4.17.21",
