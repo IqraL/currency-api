@@ -1,9 +1,25 @@
 import express, { Request } from "express";
-import { Item } from "./types";
-import { groupBy } from "lodash";
-import { generateAllPayouts } from "./generateAllPayouts";
-import { addPayoutsToDB, getPayouts } from "./database";
 import { Client } from "pg";
+import WebSocket, { WebSocketServer } from "ws";
+import { Server } from "socket.io";
+
+const clientServer = new Server(4000, {
+  cors: { origin: "*" },
+});
+
+clientServer.on("connection", (socket) => {
+  const coincapWS = new WebSocket("wss://ws.coincap.io/prices?assets=ALL");
+
+  coincapWS.on("message", (rawData) => {
+    const data = rawData.toString();
+    socket.emit("currencyData", data);
+  });
+
+  socket.on("close", () => {
+    coincapWS.close();
+    socket.disconnect(true);
+  });
+});
 
 const app = express();
 app.use(express.json());
@@ -18,31 +34,22 @@ const client = new Client({
   password: "q_KrWfNbpsMpm06PGjmLm7fQMDZtiyE3",
   database: "lowjqxwy",
 });
+
 client.connect();
 
 app.listen(port, () => console.log(`Running on port ${port}`));
 
-//upload items to / - example data in sample-test-data-postman.json
-app.post("/", async (req: Request<{}, {}, Item[]>, res) => {
-  const { body: soldItems } = req;
-  const uploadId = new Date().getTime().toString();
-  const soldItemsBysellerReference = groupBy(soldItems, "sellerReference");
-
-  const allPayouts = generateAllPayouts(soldItemsBysellerReference, uploadId);
-  await addPayoutsToDB(allPayouts, client);
-  res.sendStatus(200);
+app.get("/", async (req, res) => {
+  res.send();
 });
 
-// example: localhost:5000/payouts?numberOfPayouts=10
-// gets the last payouts that where saved in the db
-app.get(
-  "/payouts",
-  async (req: Request<{}, {}, {}, { numberOfPayouts: string }>, res) => {
-    const {
-      query: { numberOfPayouts },
-    } = req;
-
-    const payouts = await getPayouts(numberOfPayouts, client);
-    res.json(payouts);
-  }
-);
+//TODO: later
+// app.get("/initalPrices", async (req, res) => {
+//   try {
+//       const allcurrenciesData = await axios.get("api.coincap.io/v2/assets", {});
+//     res.send();
+//   } catch (error) {
+//     console.log("error", error);
+//     res.send();
+//   }
+// });
