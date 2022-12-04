@@ -1,6 +1,9 @@
 {
   "name": "currency-api",
   "version": "1.0.0",
+  "engines": {
+    "node": "14.21.1"
+  },
   "description": "1. npm i\r 2. npm run start or npm run dev\r 3. upload items to localhost:5000/ (POST request) sample data is provided in sample-test-data-postman.json in root directory of project\r 4. to get payput generated use the GET request localhost:5000/payouts?numberOfPayouts=10\r    \"numberOfPayouts\" query gets the last saved payouts in the db in this example you would get the last 10 saved payouts in the db\r 5. you can change the MAX_PAYOUT_AMOUNT for a payout , its in the constant file in src",
   "main": ".eslintrc.js",
   "directories": {
