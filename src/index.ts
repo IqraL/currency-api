@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded());
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5002;
 
 const server = require("http").createServer(app);
 
@@ -42,9 +42,8 @@ const client = new Client({
 client.connect();
 
 app.get("/", async (req, res) => {
-  res.send();
+  res.send({});
 });
-
 //TODO: later
 // app.get("/initalPrices", async (req, res) => {
 //   try {
